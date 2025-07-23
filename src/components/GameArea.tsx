@@ -10,6 +10,8 @@ interface GameAreaProps {
 }
 
 export default function GameArea({ width, height, children }: GameAreaProps) {
+  
+
   return (
     <div className={styles.gameArea} style={{ width, height }}>
       {children}
