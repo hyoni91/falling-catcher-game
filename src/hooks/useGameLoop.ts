@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 
 // update関数を受け取り、ゲームループを実行するカスタムフック
-// dtは前回の更新からの経過時間を表す -> void 
 export function useGameLoop(update:(dt:number)=> void){
 
     // フレームごとの参照を保持するためのuseRefフック
