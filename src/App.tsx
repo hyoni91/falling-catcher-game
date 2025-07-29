@@ -34,7 +34,7 @@ function App() {
         x: Math.random() * 400, // 0から400の範囲でランダムなX座標
         y: 40, // Y座標は0からスタート
         speed: Math.random() * (5 - 2) + 2, //  px/frame (60fpsで120-360px/s) 
-        //  Math.random() * (max – min) + min 난수를 생성하는 공식 
+        //  Math.random() * (max – min) + min 乱数を生成 
 
         size: ITEM_SIZE
       };

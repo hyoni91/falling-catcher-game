@@ -3,9 +3,9 @@
 import { useEffect } from "react";
 
 
-type inputHandler = () => void;
+type InputHandler = () => void;
 
-export default function useInput(onInput: inputHandler) {
+export default function useInput(onInput: InputHandler) {
   // キーボード入力を監視するためのイベントリスナーを設定
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
