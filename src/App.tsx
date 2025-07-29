@@ -12,6 +12,7 @@ import { useTimer } from './hooks/useTimer';
 // 定数の定義
 const ITEM_SIZE = 20;
 const SPAWN_INTERVAL = 1000; // ms 1秒ごとにアイテムを生成
+const MISS_COUNT_THRESHOLD = 10; // ミスカウントの閾値
 
 // キャッチゾーンのY座標
 const GAME_AREA_HEIGHT = 700;
@@ -43,7 +44,7 @@ function App() {
   }, [score, timeLeft]);
 
     useEffect(() => {
-      if (timeLeft.timeLeft <= 0 || missCount >= 10) {
+      if (timeLeft.timeLeft <= 0 || missCount >= MISS_COUNT_THRESHOLD) {
         onGameOver(); // タイマーが0になったらゲームオーバー
       }
     }, [timeLeft, missCount, onGameOver]);

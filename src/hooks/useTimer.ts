@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 
 
 export function useTimer(initialSeconds: number) {
-    const [timeLeft, setTimeLeft] = useState(initialSeconds); 
+    const [timeLeft, setTimeLeft] = useState(initialSeconds);  
 
     useEffect(()=>{
 
@@ -24,9 +24,9 @@ export function useTimer(initialSeconds: number) {
         return () => clearInterval(timer); // クリーンアップ関数でタイマーをクリア
     },[timeLeft]) // 初期秒数が変更されたときに再実行
 
-    const reset = useCallback(() => {
+    const reset = useCallback(() => { 
         setTimeLeft(initialSeconds);
     }, [initialSeconds]);
-    
+
   return { timeLeft, reset };
 }
