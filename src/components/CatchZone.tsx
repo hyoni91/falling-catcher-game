@@ -1,4 +1,3 @@
-import React from "react";
 
 
 interface CatchZoneProps {
@@ -15,9 +14,10 @@ export default function CatchZone({ y, height}: CatchZoneProps) {
         left: 0,
         top: y, 
         width: '100%',
-        backgroundColor: 'rgba(0, 255, 0, 0.5)',
+        backgroundColor: 'rgb(0, 255, 0)',
         borderTop: '2px solid green',
-        height: `${height}px`, 
+        height: `${height}px`,
+        zIndex: 100, // 他の要素の上に表示 
       }}
     />
   );

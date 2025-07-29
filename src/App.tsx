@@ -13,7 +13,7 @@ const SPAWN_INTERVAL = 1000; // ms 1秒ごとにアイテムを生成
 
 // キャッチゾーンのY座標
 const GAME_AREA_HEIGHT = 700;
-const CATCH_ZONE_HEIGHT = 70;
+const CATCH_ZONE_HEIGHT = 50;
 
 
 function App() {
@@ -41,15 +41,27 @@ function App() {
       setItems((prevItems) => [...prevItems, newItem]); // 新しいアイテムを追加
     }
 
-    setItems(prev =>
-      prev
+     setItems(prev => {
+      let missed = 0;
+      const nextItems = prev
         .map(item => ({
           ...item,
-          y: item.y + item.speed * (dt / (1000 / 60)), // dtを使ってアイテムのY座標を更新
+          y: item.y + item.speed * (dt / (1000 / 60)),
         }))
-        // 4) 画面下に過ぎたら自動的に削除 (Miss処理と連動可能)
-        .filter(item => item.y <= 600)
-    );
+        .filter(item => {
+          if (item.y <= GAME_AREA_HEIGHT) {
+            return true;  // 아직 화면 안
+          }
+          // 바닥 아래로 나간 아이템은 Miss
+          missed += 1;
+          return false;   // 배열에서 제거
+        });
+
+      if (missed > 0) {
+        setMissCount(m => m + missed);
+      }
+      return nextItems;
+    });
 
   }, []);
 
@@ -57,17 +69,13 @@ function App() {
 
 
   const handleCatch = useCallback(() => {
-  setItems(prevItems => {
-    if (prevItems.length === 0) {
-      // 잡을 아이템이 없으면 바로 Miss
-      setMissCount(m => m + 1);
-      return prevItems;
-    }
+    setItems(prevItems => {
+    if (prevItems.length === 0) return prevItems; // アイテムがない場合は何もしない
 
-    // 1) 각 아이템의 거리 계산
-    const distances = prevItems.map(item => {
-      const itemBottom = item.y + ITEM_SIZE;
-      return {
+      // 1) 각 아이템의 거리 계산
+      const distances = prevItems.map(item => {
+        const itemBottom = item.y + ITEM_SIZE;
+        return {
         id: item.id,
         distance: Math.abs(itemBottom - CatchZoneY),
       };
@@ -78,10 +86,11 @@ function App() {
       cur.distance < best.distance ? cur : best
     , distances[0]);
 
+    console.log('nearest', nearest);
     // 3) 판정 기준 적용
     if (nearest.distance <= 10) {
       setScore(s => s + 100);       // Perfect
-    } else if (nearest.distance <= 50) {
+    } else if (nearest.distance <= 20) {
       setScore(s => s + 50);        // Good
     } else {
       setMissCount(m => m + 1);     // Miss
@@ -89,18 +98,16 @@ function App() {
     
     return prevItems.filter(item => item.id !== nearest.id); // 잡은 아이템 제거
   });
+  
 }, [CatchZoneY]);
 
-  useInput(handleCatch); // スペースキーでキャッチ
+  useInput(handleCatch);
 
   return (
     <>
       <GameArea 
-        width={500} height={GAME_AREA_HEIGHT}
-        tabIndex={0}
-        onKeyDown={(e) => {
-        if (e.code === 'Space') handleCatch();
-     }}
+        width={500} 
+        height={GAME_AREA_HEIGHT}
       >
         <h1>ゲームエリア</h1>
          <CatchZone y={CatchZoneY} height={CATCH_ZONE_HEIGHT} />
