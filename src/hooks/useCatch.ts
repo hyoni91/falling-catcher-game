@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 
-
 interface Item{
     id : number;
     y : number;
@@ -13,8 +12,6 @@ interface useCatchProps{
     onHit: (id: number, scoreDelta: number) => void; // アイテムがキャッチされたときのコールバック
     onMiss: (id: number) => void; // アイテムがミスされたときのコールバック
 }
-
-
 
 export function useCatch({ items, itemSize, CatchZoneY, onHit, onMiss }: useCatchProps) {
 
@@ -38,7 +35,7 @@ export function useCatch({ items, itemSize, CatchZoneY, onHit, onMiss }: useCatc
         } else {
           onMiss(nearest.id); // Miss
         }
-    }, [items, CatchZoneY, onHit, onMiss]);
+    }, [items, itemSize, CatchZoneY, onHit, onMiss]);
 
 }
 
