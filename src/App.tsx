@@ -1,5 +1,5 @@
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { use, useCallback, useEffect, useRef, useState } from 'react';
 import './App.css'
 import GameArea from './components/GameArea'
 import { useGameLoop } from './hooks/useGameLoop';
@@ -8,6 +8,7 @@ import CatchZone from './components/CatchZone';
 import useInput from './hooks/useInput';
 import ScoreBoard from './components/ScoreBoard';
 import { useTimer } from './hooks/useTimer';
+import { useGameOver } from './hooks/useGameOver';
 
 // 定数の定義
 const ITEM_SIZE = 20;
@@ -28,27 +29,26 @@ function App() {
   const CatchZoneY = GAME_AREA_HEIGHT - CATCH_ZONE_HEIGHT; 
 
 
-  const onGameOver = useCallback(() => {
-    // ゲームオーバー時の処理
-    alert(`Game Over! Your score: ${score}`);
-
-    // リセット
-    setItems([]);
-    setScore(0);
-    setMissCount(0);
-    nextId.current = 0;
-    spawnTimer.current = 0;
-
-    timeLeft.reset(); // タイマーをリセット
-
-  }, [score, timeLeft]);
-
-    useEffect(() => {
-      if (timeLeft.timeLeft <= 0 || missCount >= MISS_COUNT_THRESHOLD) {
-        onGameOver(); // タイマーが0になったらゲームオーバー
+    // ゲームオーバーの状態を管理するカスタムフックを使用
+    const { checkGameOver } = useGameOver({
+      timeLife: timeLeft,
+      missCount,
+      score,
+      thresholdMiss: MISS_COUNT_THRESHOLD,
+      thresholdTime: 0, // タイマーの閾値は0に設定
+      onReset: () => {
+        setItems([]);
+        setScore(0);
+        setMissCount(0);
+        nextId.current = 0;
+        spawnTimer.current = 0;
+        timeLeft.reset(); 
       }
-    }, [timeLeft, missCount, onGameOver]);
+    })
 
+    useEffect(()=>{
+      checkGameOver(); // 初期状態でゲームオーバーをチェック
+    },[checkGameOver, timeLeft.timeLeft, missCount]);
 
     const update = useCallback((dt: number) => {
       spawnTimer.current += dt; // タイマーを更新
