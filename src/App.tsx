@@ -1,5 +1,5 @@
 
-import { use, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import './App.css'
 import GameArea from './components/GameArea'
 import { useGameLoop } from './hooks/useGameLoop';
@@ -9,6 +9,7 @@ import useInput from './hooks/useInput';
 import ScoreBoard from './components/ScoreBoard';
 import { useTimer } from './hooks/useTimer';
 import { useGameOver } from './hooks/useGameOver';
+import { useCatch } from './hooks/useCatch';
 
 // 定数の定義
 const ITEM_SIZE = 20;
@@ -42,7 +43,7 @@ function App() {
         setMissCount(0);
         nextId.current = 0;
         spawnTimer.current = 0;
-        timeLeft.reset(); 
+        timeLeft.reset(); // タイマーをリセット
       }
     })
 
@@ -92,41 +93,21 @@ function App() {
 
     useGameLoop(update); // ゲームループを開始
 
+  const catchHandler = useCatch({
+    items,
+    itemSize: ITEM_SIZE,
+    CatchZoneY,
+    onHit: (id, scoreDelta) => {
+      setScore(s => s + scoreDelta); // アイテムをキャッチしたときのスコア更新
+      setItems(prevItems => prevItems.filter(item => item.id !== id)); // キャッチしたアイテムを削除
+    },
+    onMiss: (id) => {
+      setMissCount(m => m + 1); // ミスカウントを増やす
+      setItems(prevItems => prevItems.filter(item => item.id !== id)); // ミスしたアイテムを削除
+    }
+  });
 
-    const handleCatch = useCallback(() => {
-      setItems(prevItems => {
-      if (prevItems.length === 0) return prevItems; // アイテムがない場合は何もしない
-
-        // 1) 各アイテムの距離を計算
-        const distances = prevItems.map(item => {
-          const itemBottom = item.y + ITEM_SIZE;
-          return {
-          id: item.id,
-          distance: Math.abs(itemBottom - CatchZoneY),
-        };
-      });
-
-      // 2) 最小距離アイテム選択
-      const nearest = distances.reduce((best, cur) =>
-        cur.distance < best.distance ? cur : best
-      , distances[0]);
-
-      console.log('nearest', nearest);
-      // 3) 判定基準を適用
-      if (nearest.distance <= 10) {
-        setScore(s => s + 100);       // Perfect
-      } else if (nearest.distance <= 20) {
-        setScore(s => s + 50);        // Good
-      } else {
-        setMissCount(m => m + 1);     // Miss
-      }
-      
-      return prevItems.filter(item => item.id !== nearest.id); // 잡은 아이템 제거
-    });
-    
-  }, [CatchZoneY]);
-
-    useInput(handleCatch);
+  useInput(catchHandler); // キーボード入力を設定
 
   return (
     <>

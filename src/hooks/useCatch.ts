@@ -10,13 +10,13 @@ interface useCatchProps{
     items : Item[];
     itemSize : number; // アイテムのサイズ
     CatchZoneY : number; // キャッチゾーンのY座標
-    
-
+    onHit: (id: number, scoreDelta: number) => void; // アイテムがキャッチされたときのコールバック
+    onMiss: (id: number) => void; // アイテムがミスされたときのコールバック
 }
 
 
 
-export function useCatch({ items, itemSize, CatchZoneY }: useCatchProps) {
+export function useCatch({ items, itemSize, CatchZoneY, onHit, onMiss }: useCatchProps) {
 
     return useCallback(() => {
        if (items.length === 0) return;
@@ -32,9 +32,13 @@ export function useCatch({ items, itemSize, CatchZoneY }: useCatchProps) {
         , distances[0]);
 
         if(nearest.distance <= 10) {
-          return nearest.id; // Perfect
+          onHit(nearest.id, 100); // Perfect
+        } else if (nearest.distance <= 20) {
+          onHit(nearest.id, 50); // Good
+        } else {
+          onMiss(nearest.id); // Miss
         }
+    }, [items, CatchZoneY, onHit, onMiss]);
 
-    }, []); // ここに実装を追加する必要があります
 }
 
