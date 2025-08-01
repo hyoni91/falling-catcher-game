@@ -1,5 +1,5 @@
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {  useEffect, useRef, useState } from 'react';
 import './App.css'
 import GameArea from './components/GameArea'
 import { useGameLoop } from './hooks/useGameLoop';
@@ -10,8 +10,11 @@ import ScoreBoard from './components/ScoreBoard';
 import { useTimer } from './hooks/useTimer';
 import { useGameOver } from './hooks/useGameOver';
 import { useCatch } from './hooks/useCatch';
+import { useSpawnAndPhysics } from './hooks/useSpawnAndPhysics';
+import type { ItemType } from './types';
 
 // 定数の定義
+const BOX_SIZE = 500; 
 const ITEM_SIZE = 20;
 const SPAWN_INTERVAL = 1000; // ms 1秒ごとにアイテムを生成
 const MISS_COUNT_THRESHOLD = 10; // ミスカウントの閾値
@@ -21,7 +24,8 @@ const GAME_AREA_HEIGHT = 700;
 const CATCH_ZONE_HEIGHT = 50;
 
 function App() {
-  const [items, setItems] = useState<{ id: number; x: number; y: number; speed: number }[]>([]);
+  
+  const [items, setItems] = useState<ItemType[]>([]);
   const [score, setScore] = useState(0); 
   const [missCount, setMissCount] = useState(0); 
   const nextId = useRef(0);
@@ -43,7 +47,7 @@ function App() {
         setMissCount(0);
         nextId.current = 0;
         spawnTimer.current = 0;
-        timeLeft.reset(); // タイマーをリセット
+        timeLeft.reset();
       }
     })
 
@@ -51,68 +55,40 @@ function App() {
       checkGameOver(); // 初期状態でゲームオーバーをチェック
     },[checkGameOver, timeLeft.timeLeft, missCount]);
 
-    const update = useCallback((dt: number) => {
-      spawnTimer.current += dt; // タイマーを更新
-      if (spawnTimer.current >= SPAWN_INTERVAL) {
-        spawnTimer.current = 0; // タイマーをリセット
-        const newItem = {
-          id: nextId.current++,
-          x: Math.random() * 400, // 0から400の範囲でランダムなX座標
-          y: 40, // Y座標は0からスタート
-          speed: Math.random() * (5 - 2) + 2, //  px/frame (60fpsで120-360px/s) 
-          //  Math.random() * (max – min) + min 乱数を生成 
+    const { update, applyPhysics } = useSpawnAndPhysics({
+    spawnInterval: SPAWN_INTERVAL,
+    maxX: BOX_SIZE,
+    itemSize: ITEM_SIZE,
+    gameAreaHeight: GAME_AREA_HEIGHT,
+    onMiss: count => setMissCount(m => m + count),
+    setItems,
+  });
 
-          size: ITEM_SIZE
-        };
-        setItems((prevItems) => [...prevItems, newItem]); // 新しいアイテムを追加
-      }
-
-      setItems(prev => {
-        let missed = 0;
-        const nextItems = prev
-          .map(item => ({
-            ...item,
-            y: item.y + item.speed * (dt / (1000 / 60)),
-          }))
-          .filter(item => {
-            if (item.y <= GAME_AREA_HEIGHT) {
-              return true;  // アイテムがゲームエリア内にある場合は残す
-            }
-            // 底下に出たアイテムはMiss
-            missed += 1;
-            return false;   // 配列から削除
-          });
-
-        if (missed > 0) {
-          setMissCount(m => m + missed);
-        }
-        return nextItems;
-      });
-
-    }, []);
-
-    useGameLoop(update); // ゲームループを開始
+  useGameLoop(dt => {
+      update(dt);
+      setItems(items => applyPhysics(items, dt)); // アイテムの物理演算を適用
+    });
 
   const catchHandler = useCatch({
     items,
     itemSize: ITEM_SIZE,
     CatchZoneY,
     onHit: (id, scoreDelta) => {
-      setScore(s => s + scoreDelta); // アイテムをキャッチしたときのスコア更新
+      setScore(s => s + scoreDelta); 
       setItems(prevItems => prevItems.filter(item => item.id !== id)); // キャッチしたアイテムを削除
     },
     onMiss: (id) => {
-      setMissCount(m => m + 1); // ミスカウントを増やす
+      setMissCount(m => m + 1); 
       setItems(prevItems => prevItems.filter(item => item.id !== id)); // ミスしたアイテムを削除
     }
   });
 
-  useInput(catchHandler); // キーボード入力を設定
+  useInput(catchHandler); 
 
   return (
     <>
       <GameArea 
-        width={500} 
+        width={BOX_SIZE} 
         height={GAME_AREA_HEIGHT}
       >
         <h1>ゲームエリア</h1>

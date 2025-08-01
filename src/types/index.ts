@@ -1,4 +1,4 @@
-export type Item = {
+export type ItemType = {
   id: number;
   x: number;         // 화면 왼쪽에서의 위치
   y: number;         // 화면 위쪽에서의 위치
