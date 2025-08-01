@@ -5,7 +5,7 @@ interface SpawnAndPhysicsState {
     spawnInterval: number;
     maxX: number;
     gameAreaHeight: number;
-    itemSize:number;
+    itemSize: number;
     setItems: React.Dispatch<React.SetStateAction<ItemType[]>>; // アイテムの状態を更新する関数
     onMiss: (count: number) => void;
 }
@@ -25,10 +25,10 @@ export function useSpawnAndPhysics({
     const update = useCallback((dt: number) => {
       spawnTimer.current += dt; // タイマーを更新
       if (spawnTimer.current >= spawnInterval) {
-        spawnTimer.current = maxX; // タイマーをリセット
+        spawnTimer.current = 0; 
         const newItem = {
           id: nextId.current++,
-          x: Math.random() * 400, // 0から400の範囲でランダムなX座標
+          x: Math.random() * maxX, // 0からmaxXの範囲でランダムなX座標
           y: 40, // Y座標は0からスタート
           speed: Math.random() * (5 - 2) + 2, //  px/frame (60fpsで120-360px/s) 
           //  Math.random() * (max – min) + min 乱数を生成 

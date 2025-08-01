@@ -72,7 +72,7 @@ function App() {
   const catchHandler = useCatch({
     items,
     itemSize: ITEM_SIZE,
-    CatchZoneY,
+    catchZoneY : CatchZoneY,
     onHit: (id, scoreDelta) => {
       setScore(s => s + scoreDelta); 
       setItems(prevItems => prevItems.filter(item => item.id !== id)); // キャッチしたアイテムを削除

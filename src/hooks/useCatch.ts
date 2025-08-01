@@ -8,12 +8,12 @@ interface Item{
 interface useCatchProps{
     items : Item[];
     itemSize : number; // アイテムのサイズ
-    CatchZoneY : number; // キャッチゾーンのY座標
+    catchZoneY : number; // キャッチゾーンのY座標
     onHit: (id: number, scoreDelta: number) => void; // アイテムがキャッチされたときのコールバック
     onMiss: (id: number) => void; // アイテムがミスされたときのコールバック
 }
 
-export function useCatch({ items, itemSize, CatchZoneY, onHit, onMiss }: useCatchProps) {
+export function useCatch({ items, itemSize, catchZoneY, onHit, onMiss }: useCatchProps) {
 
     return useCallback(() => {
        if (items.length === 0) return;
@@ -21,7 +21,7 @@ export function useCatch({ items, itemSize, CatchZoneY, onHit, onMiss }: useCatc
           const itemBottom = item.y + itemSize; // itemSizeはアイテムのサイズを表す定数
           return {
             id: item.id,
-            distance: Math.abs(itemBottom - CatchZoneY),
+            distance: Math.abs(itemBottom - catchZoneY),
           };
         })
         const nearest = distances.reduce((best, cur) =>
@@ -35,7 +35,7 @@ export function useCatch({ items, itemSize, CatchZoneY, onHit, onMiss }: useCatc
         } else {
           onMiss(nearest.id); // Miss
         }
-    }, [items, itemSize, CatchZoneY, onHit, onMiss]);
+    }, [items, itemSize, catchZoneY, onHit, onMiss]);
 
 }
 
