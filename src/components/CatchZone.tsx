@@ -19,6 +19,7 @@ export default function CatchZone({ y, height}: CatchZoneProps) {
         height: `${height}px`,
         zIndex: 100, // 他の要素の上に表示 
       }}
-    />
+    >
+    </div>
   );
 }

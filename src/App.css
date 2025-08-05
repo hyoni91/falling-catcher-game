@@ -1,0 +1,13 @@
+
+body{
+    background-color: black;
+    color: white;
+    height: auto;
+}
+
+.app-root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* ビューポートの高さに合わせる */
+}

@@ -23,14 +23,15 @@ export function useSpawnAndPhysics({
     const nextId = useRef(0);
     
     const update = useCallback((dt: number) => {
-      spawnTimer.current += dt; // タイマーを更新
-      console.log('spawnTimer', spawnTimer.current)
+      spawnTimer.current += dt; 
+
+      // spawnIntervalが経過したら新しいアイテムを生成
       if (spawnTimer.current >= spawnInterval) {
         spawnTimer.current = 0; 
         const newItem = {
           id: nextId.current++,
-          x: Math.random() * maxX -100, // 0からmaxXの範囲でランダムなX座標
-          y: 40, // Y座標は0からスタート
+          x: Math.random() * maxX -100, 
+          y: 40, 
           speed: Math.random() * (5 - 2) + 2, //  px/frame (60fpsで120-360px/s) 
           //  Math.random() * (max – min) + min 乱数を生成 
 

@@ -97,12 +97,11 @@ function App() {
 
 
   return (
-    <>
+    <div className="app-root">
       <GameArea 
         width={BOX_SIZE} 
         height={GAME_AREA_HEIGHT}
       >
-        <h1>ゲームエリア</h1>
         {
           gameState === 'GameOver' && (
             <div className="game-over">
@@ -122,7 +121,7 @@ function App() {
         missCount={missCount}
         timeLeft={timeLeft.timeLeft}
       />
-    </>
+    </div>
   )
 }
 
