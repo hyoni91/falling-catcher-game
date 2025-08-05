@@ -12,6 +12,7 @@ import { useGameOver } from './hooks/useGameOver';
 import { useCatch } from './hooks/useCatch';
 import { useSpawnAndPhysics } from './hooks/useSpawnAndPhysics';
 import { type GameState, type ItemType } from './types';
+import { GameOverOverlay } from './components/GameOverOverlay';
 // 定数の定義
 const BOX_SIZE = 500; 
 const ITEM_SIZE = 20;
@@ -69,7 +70,6 @@ function App() {
   useGameOver({
     timeLeft,
     missCount,
-    score,
     thresholdMiss: MISS_COUNT_THRESHOLD,
     thresholdTime: 0, 
     onReset: () => {
@@ -81,6 +81,9 @@ function App() {
 
   const startGame = () => {
     setGameState('Playing');
+    setItems([]);
+    setScore(0);
+    setMissCount(0);
     timeLeft.reset();
     setTimerEnabled(true); 
   };
@@ -88,10 +91,6 @@ function App() {
   const endGame = () => {
     setGameState('GameOver');
     setTimerEnabled(false);
-    setItems([]);
-    setScore(0);
-    setMissCount(0);
-    timeLeft.stop();
   };
 
 
@@ -105,8 +104,16 @@ function App() {
         {
           gameState === 'GameOver' && (
             <div className="game-over">
-              <button onClick={() => startGame()}>Start</button>
+              <button onClick={() => startGame()}>RESTART</button>
             </div>
+          )}
+
+          {
+          gameState === `GameOver` && (
+            <GameOverOverlay
+              score={score}
+              missCount={missCount}
+            />
           )}
 
         {items.map(item => (
