@@ -11,3 +11,74 @@ body{
   align-items: center;
   min-height: 100vh; /* ビューポートの高さに合わせる */
 }
+
+
+
+.game-over {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+
+.game-over button {
+  padding: 12px 28px;
+  font-size: 16px;
+  font-family: 'Press Start 2P', cursive; 
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  background: linear-gradient(45deg, #ff0080, #ff8c00, #40e0d0, #ff0080);
+  background-size: 400% 400%;
+  color: #fff;
+  border: 3px solid #fff;
+  border-radius: 12px;
+
+  /* 그림자 효과로 네온 느낌 추가 */
+  box-shadow:
+    0 0 8px rgba(255, 0, 128, 0.7),
+    0 0 16px rgba(255, 0, 128, 0.5),
+    inset 0 0 4px rgba(255, 255, 255, 0.2);
+
+  cursor: pointer;
+  transition:
+    background-position 1.5s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* 배경 그라데이션 애니메이션 */
+.game-over button {
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.game-over button:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 0 12px rgba(255, 0, 128, 0.8),
+    0 0 24px rgba(255, 0, 128, 0.6),
+    inset 0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+.game-over button:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow:
+    0 0 4px rgba(255, 0, 128, 0.5),
+    0 0 8px rgba(255, 0, 128, 0.3),
+    inset 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.game-over button:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(255, 0, 128, 0.7),
+    inset 0 0 6px rgba(255, 255, 255, 0.3);
+}

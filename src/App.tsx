@@ -105,7 +105,7 @@ function App() {
         {
           gameState === 'GameOver' && (
             <div className="game-over">
-              <button onClick={() => startGame()}>再スタート</button>
+              <button onClick={() => startGame()}>Start</button>
             </div>
           )}
 
