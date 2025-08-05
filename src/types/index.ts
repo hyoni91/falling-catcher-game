@@ -7,3 +7,5 @@ export type ItemType = {
 };
 
 export type Judgment = 'Perfect' | 'Good' | 'Miss';
+
+export type GameState = 'Playing' | 'GameOver' | 'Paused';

@@ -2,8 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-// update関数を受け取り、ゲームループを実行するカスタムフック
-export function useGameLoop(update:(dt:number)=> void){
+export function useGameLoop(update: (dt: number) => void){
 
     // frameRefは現在のフレームIDを保持し、lastTimeRefは前回の更新時の時間を保持する
     // performance.now()は現在の時間をミリ秒単位で取得する

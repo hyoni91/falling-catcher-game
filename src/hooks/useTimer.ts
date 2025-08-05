@@ -1,32 +1,48 @@
+// src/hooks/useTimer.ts
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-// 60秒カウントダウンタイマー
+export function useTimer(initialSeconds: number, enabled = true) {
+  const [timeLeft, setTimeLeft] = useState(initialSeconds);
+  const timerId = useRef<number | null>(null);
 
-import { useCallback, useEffect, useState } from "react";
+  useEffect(() => {
+    if (!enabled) return;      // ビ活性化時は登録しない
 
+    // すでにインターバルが登録されている場合はスキップ
+    if (timerId.current !== null) return;
 
-export function useTimer(initialSeconds: number) {
-    const [timeLeft, setTimeLeft] = useState(initialSeconds);  
+    timerId.current = window.setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          // 0秒到達時のクリーンアップ
+          clearInterval(timerId.current!);
+          timerId.current = null;
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
-    useEffect(()=>{
+    // コンポーネントのアンマウントまたはenabledの変更時にクリーンアップ
+    return () => {
+      if (timerId.current !== null) {
+        clearInterval(timerId.current);
+        timerId.current = null;
+      }
+    };
+  }, [enabled]);  
 
-        if (timeLeft <= 0) return; 
+  const reset = useCallback(() => {
+    setTimeLeft(initialSeconds);
+  }, [initialSeconds]);
 
-        const timer = setInterval(() => {
-            setTimeLeft(prev => {
-                if (prev <= 1) {
-                    clearInterval(timer); // タイマーをクリア
-                    return 0; // 0秒に設定
-                }
-                return prev - 1; // 1秒減らす
-            });
-        }, 1000); // 1秒ごとに実行
+  const stop = useCallback(() => {
+    if (timerId.current !== null) {
+      clearInterval(timerId.current);
+      timerId.current = null;
+    }
+    setTimeLeft(initialSeconds);
+  }, [initialSeconds]);
 
-        return () => clearInterval(timer); // クリーンアップ関数でタイマーをクリア
-    },[timeLeft]) // 初期秒数が変更されたときに再実行
-
-    const reset = useCallback(() => { 
-        setTimeLeft(initialSeconds);
-    }, [initialSeconds]);
-
-  return { timeLeft, reset };
+  return { timeLeft, reset, stop };
 }

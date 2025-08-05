@@ -1,5 +1,5 @@
 
-import {  useEffect, useRef, useState } from 'react';
+import {  useState } from 'react';
 import './App.css'
 import GameArea from './components/GameArea'
 import { useGameLoop } from './hooks/useGameLoop';
@@ -11,8 +11,7 @@ import { useTimer } from './hooks/useTimer';
 import { useGameOver } from './hooks/useGameOver';
 import { useCatch } from './hooks/useCatch';
 import { useSpawnAndPhysics } from './hooks/useSpawnAndPhysics';
-import type { ItemType } from './types';
-
+import { type GameState, type ItemType } from './types';
 // 定数の定義
 const BOX_SIZE = 500; 
 const ITEM_SIZE = 20;
@@ -27,47 +26,21 @@ function App() {
   
   const [items, setItems] = useState<ItemType[]>([]);
   const [score, setScore] = useState(0); 
-  const [missCount, setMissCount] = useState(0); 
-  const nextId = useRef(0);
-  const spawnTimer = useRef(0); // アイテム生成のタイマー(next idを生成する間の時間)
-  const timeLeft = useTimer(60); 
+  const [missCount, setMissCount] = useState(0);
+  const [gameState, setGameState] = useState<GameState>('GameOver'); // 初期状態はゲームオーバー
+  const [timerEnabled, setTimerEnabled] = useState(false);
+  const timeLeft = useTimer(60, timerEnabled);
   const CatchZoneY = GAME_AREA_HEIGHT - CATCH_ZONE_HEIGHT; 
 
 
-    // ゲームオーバーの状態を管理するカスタムフックを使用
-    const { checkGameOver } = useGameOver({
-      timeLife: timeLeft,
-      missCount,
-      score,
-      thresholdMiss: MISS_COUNT_THRESHOLD,
-      thresholdTime: 0, // タイマーの閾値は0に設定
-      onReset: () => {
-        setItems([]);
-        setScore(0);
-        setMissCount(0);
-        nextId.current = 0;
-        spawnTimer.current = 0;
-        timeLeft.reset();
-      }
-    })
-
-    useEffect(()=>{
-      checkGameOver(); // 初期状態でゲームオーバーをチェック
-    },[checkGameOver, timeLeft.timeLeft, missCount]);
-
-    const { update, applyPhysics } = useSpawnAndPhysics({
-    spawnInterval: SPAWN_INTERVAL,
-    maxX: BOX_SIZE,
-    itemSize: ITEM_SIZE,
-    gameAreaHeight: GAME_AREA_HEIGHT,
-    onMiss: count => setMissCount(m => m + count),
-    setItems,
-  });
-
-  useGameLoop(dt => {
-      update(dt);
-      setItems(items => applyPhysics(items, dt)); // アイテムの物理演算を適用
-    });
+  const { update, applyPhysics } = useSpawnAndPhysics({
+  spawnInterval: SPAWN_INTERVAL,
+  maxX: BOX_SIZE,
+  itemSize: ITEM_SIZE,
+  gameAreaHeight: GAME_AREA_HEIGHT,
+  onMiss: count => setMissCount(m => m + count),
+  setItems,
+});
 
   const catchHandler = useCatch({
     items,
@@ -83,7 +56,46 @@ function App() {
     }
   });
 
-  useInput(catchHandler); 
+  useGameOver({
+    timeLeft,
+    missCount,
+    score,
+    thresholdMiss: MISS_COUNT_THRESHOLD,
+    thresholdTime: 0, 
+    onReset: () => {
+      endGame();
+    }
+    });
+
+  useGameLoop((dt) => {
+    if (gameState === 'Playing') {
+      update(dt);
+      setItems(items => applyPhysics(items, dt));
+    }
+  }); 
+
+    useInput(() => {
+    if (gameState !== 'Playing') return;
+    catchHandler();
+  })
+
+
+  // --- 状態遷移関数 ---
+  const startGame = () => {
+    setItems([]);
+    setScore(0);
+    setMissCount(0);
+    timeLeft.reset();
+    setGameState('Playing');
+    setTimerEnabled(true); // タイマーを有効にする
+  };
+
+  const endGame = () => {
+    setGameState('GameOver');
+    setTimerEnabled(false);
+    timeLeft.stop();
+
+  };
 
   return (
     <>
@@ -92,11 +104,19 @@ function App() {
         height={GAME_AREA_HEIGHT}
       >
         <h1>ゲームエリア</h1>
-         <CatchZone y={CatchZoneY} height={CATCH_ZONE_HEIGHT} />
+        {
+          gameState === 'GameOver' && (
+            <div className="game-over">
+              <button onClick={() => startGame()}>再スタート</button>
+            </div>
+          )}
 
         {items.map(item => (
           <Item key={item.id} x={item.x} y={item.y} size={ITEM_SIZE} />
         ))}
+
+         <CatchZone y={CatchZoneY} height={CATCH_ZONE_HEIGHT} />
+
       </GameArea>
       <ScoreBoard 
         score={score}

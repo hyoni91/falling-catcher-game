@@ -1,7 +1,7 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 interface GameOverState {
-    timeLife: { timeLeft: number; reset: () => void };
+    timeLeft: { timeLeft: number; reset: () => void };
     missCount: number;
     score: number;
     thresholdMiss : number;
@@ -10,16 +10,20 @@ interface GameOverState {
 }
 
 export function useGameOver({ 
-    timeLife, missCount, score, thresholdMiss, thresholdTime, onReset 
+    timeLeft, missCount, score, thresholdMiss, thresholdTime, onReset 
 }: GameOverState){
     const checkGameOver = useCallback(()=>{
-        if (timeLife.timeLeft <= thresholdTime || missCount >= thresholdMiss) {
+        if (timeLeft.timeLeft <= thresholdTime || missCount >= thresholdMiss) {
             alert(`Game Over! Your score: ${score}`);
-            timeLife.reset(); // タイマーをリセット
+            timeLeft.reset(); // タイマーをリセット
             onReset(); // ゲームの状態をリセット
   
         }
-    }, [timeLife, thresholdTime, missCount, thresholdMiss, score, onReset]);
+    }, [timeLeft, thresholdTime, missCount, thresholdMiss, score, onReset]);
+
+    useEffect(() => {
+    checkGameOver();
+  }, [checkGameOver]);
 
     return { checkGameOver };  // ゲームオーバーをチェックする関数を返す
 }
