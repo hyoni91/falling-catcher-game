@@ -29,7 +29,7 @@ export function useSpawnAndPhysics({
         spawnTimer.current = 0; 
         const newItem = {
           id: nextId.current++,
-          x: Math.random() * maxX, // 0からmaxXの範囲でランダムなX座標
+          x: Math.random() * maxX -100, // 0からmaxXの範囲でランダムなX座標
           y: 40, // Y座標は0からスタート
           speed: Math.random() * (5 - 2) + 2, //  px/frame (60fpsで120-360px/s) 
           //  Math.random() * (max – min) + min 乱数を生成 

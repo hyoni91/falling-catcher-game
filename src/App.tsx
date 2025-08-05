@@ -16,7 +16,7 @@ import { type GameState, type ItemType } from './types';
 const BOX_SIZE = 500; 
 const ITEM_SIZE = 20;
 const SPAWN_INTERVAL = 1000; // ms 1秒ごとにアイテムを生成
-const MISS_COUNT_THRESHOLD = 10; // ミスカウントの閾値
+const MISS_COUNT_THRESHOLD = 10; 
 
 // キャッチゾーンのY座標
 const GAME_AREA_HEIGHT = 700;
@@ -75,15 +75,14 @@ function App() {
     onReset: () => {
       endGame();
     },
-    gameState: gameState, // 現在のゲーム状態を渡す
+    gameState: gameState, 
     });
 
 
-  // --- 状態遷移関数 ---
   const startGame = () => {
     setGameState('Playing');
     timeLeft.reset();
-    setTimerEnabled(true); // タイマーを有効にする
+    setTimerEnabled(true); 
   };
 
   const endGame = () => {
@@ -93,7 +92,6 @@ function App() {
     setScore(0);
     setMissCount(0);
     timeLeft.stop();
-
   };
 
 
