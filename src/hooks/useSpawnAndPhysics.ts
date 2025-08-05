@@ -24,6 +24,7 @@ export function useSpawnAndPhysics({
     
     const update = useCallback((dt: number) => {
       spawnTimer.current += dt; // タイマーを更新
+      console.log('spawnTimer', spawnTimer.current)
       if (spawnTimer.current >= spawnInterval) {
         spawnTimer.current = 0; 
         const newItem = {
@@ -39,6 +40,7 @@ export function useSpawnAndPhysics({
       }
     }, [setItems, spawnInterval, maxX, itemSize]);
 
+    
     const applyPhysics = useCallback((items: ItemType[], dt: number) => {
       let missed = 0;
       const nextItems = items

@@ -1,5 +1,5 @@
 
-import {  useState } from 'react';
+import { useState } from 'react';
 import './App.css'
 import GameArea from './components/GameArea'
 import { useGameLoop } from './hooks/useGameLoop';
@@ -40,7 +40,15 @@ function App() {
   gameAreaHeight: GAME_AREA_HEIGHT,
   onMiss: count => setMissCount(m => m + count),
   setItems,
-});
+  });
+
+  useGameLoop((dt) => {
+    if (gameState === 'Playing') { 
+      update(dt); 
+      setItems(prevItems => applyPhysics(prevItems, dt)); 
+    }
+  });
+
 
   const catchHandler = useCatch({
     items,
@@ -56,6 +64,8 @@ function App() {
     }
   });
 
+  useInput(catchHandler)
+
   useGameOver({
     timeLeft,
     missCount,
@@ -64,38 +74,29 @@ function App() {
     thresholdTime: 0, 
     onReset: () => {
       endGame();
-    }
+    },
+    gameState: gameState, // 現在のゲーム状態を渡す
     });
-
-  useGameLoop((dt) => {
-    if (gameState === 'Playing') {
-      update(dt);
-      setItems(items => applyPhysics(items, dt));
-    }
-  }); 
-
-    useInput(() => {
-    if (gameState !== 'Playing') return;
-    catchHandler();
-  })
 
 
   // --- 状態遷移関数 ---
   const startGame = () => {
-    setItems([]);
-    setScore(0);
-    setMissCount(0);
-    timeLeft.reset();
     setGameState('Playing');
+    timeLeft.reset();
     setTimerEnabled(true); // タイマーを有効にする
   };
 
   const endGame = () => {
     setGameState('GameOver');
     setTimerEnabled(false);
+    setItems([]);
+    setScore(0);
+    setMissCount(0);
     timeLeft.stop();
 
   };
+
+
 
   return (
     <>
