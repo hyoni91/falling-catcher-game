@@ -15,7 +15,7 @@ import { type GameState, type ItemType } from './types';
 import { GameOverOverlay } from './components/GameOverOverlay';
 // 定数の定義
 const BOX_SIZE = 500; 
-const ITEM_SIZE = 20;
+const ITEM_SIZE = 25;
 const SPAWN_INTERVAL = 1000; // ms 1秒ごとにアイテムを生成
 const MISS_COUNT_THRESHOLD = 10; 
 
@@ -74,6 +74,7 @@ function App() {
     thresholdTime: 0, 
     onReset: () => {
       endGame();
+      setItems([]);
     },
     gameState: gameState, 
     });
@@ -115,6 +116,7 @@ function App() {
             <div className="game-over">
               <button onClick={() => startGame()}>START</button>
             </div>
+            
           )}
 
           {

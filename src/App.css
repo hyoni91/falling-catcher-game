@@ -106,3 +106,31 @@ body{
   gap: 20px;
   z-index: 200;
 }
+
+
+.game-item {
+  position: absolute;
+  pointer-events: none; 
+  will-change: transform, box-shadow;
+  animation: float 1.5s ease-in-out infinite alternate;
+}
+
+.star {
+  background: transparent;
+  clip-path: polygon(
+    50% 0%, 61% 35%, 98% 35%,
+    68% 57%, 79% 91%, 50% 70%,
+    21% 91%, 32% 57%, 2% 35%,
+    39% 35%
+  );
+  background: linear-gradient(45deg, #ffe02f, #ffa500);
+  box-shadow:
+    0 0 6px #403c27b3,
+    0 0 12px rgba(255, 165, 0, 0.5);
+}
+
+
+@keyframes float {
+  from { transform: translateY(0) scale(1); }
+  to   { transform: translateY(-8px) scale(1.05); }
+}

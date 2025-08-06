@@ -11,15 +11,8 @@ interface ItemProps {
 export default function Item({ x, y, size }: ItemProps) {
   return (
     <div
-      style={{
-        position: 'absolute',
-        top: y,
-        left: x,
-        width: size,
-        height: size,
-        backgroundColor: 'red',     // イメージの代わりに赤い四角形を使用（変更可能）
-        borderRadius: '50%',        // 丸い形
-      }}
+      className="game-item star"      
+      style={{ top: y, left: x, width: size, height: size }}
     />
     );
 }
