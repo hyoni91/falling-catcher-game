@@ -1,28 +1,38 @@
-// アイテムの生成・移動・判定を行うカスタムフック
+
+/**
+ * useGameLoop : アイテムの生成・移動・判定を行うカスタムフック
+ * @param update - フレームごとに呼び出される更新関数
+ * このフックは、ゲームのループを管理し、指定された更新関数をフレームごとに呼び出します。   
+ * useGameLoopは、requestAnimationFrameを使用して、ブラウザの描画タイミングに合わせて更新を行います。
+ * @returns void
+ */
+
 
 import { useEffect, useRef } from "react";
 
-// update関数を受け取り、ゲームループを実行するカスタムフック
-export function useGameLoop(update:(dt:number)=> void){
+export function useGameLoop(update: (dt: number) => void){
+    const frameRef = useRef<number>(undefined); // requestAnimationFrameのIDを保持
+    const lastTimeRef = useRef<number>(performance.now()); // 前回のフレームの時間を保持
+    const updateRef = useRef(update); // update関数を保持するためのref
 
-    // frameRefは現在のフレームIDを保持し、lastTimeRefは前回の更新時の時間を保持する
-    // performance.now()は現在の時間をミリ秒単位で取得する
-    const frameRef = useRef<number>(undefined);
-    const lastTimeRef = useRef<number>(performance.now());
+    // updateが変わるたびにrefに最新の関数を保存
+    useEffect(() => {
+        updateRef.current = update;
+    }, [update]);
 
-    const loop = (now:number) => {
-        const dt = now - lastTimeRef.current; // 前回の更新からの経過時間を計算
-        lastTimeRef.current = now; // 現在の時間を更新
-        update(dt); // 更新関数を呼び出す
-        frameRef.current = requestAnimationFrame(loop); // 次のフレームをリクエスト
-    }
+    const loop = (now: number) => {
+        const dt = now - lastTimeRef.current;
+        lastTimeRef.current = now;
+        updateRef.current(dt); // 最新のupdate関数を呼び出す
+        frameRef.current = requestAnimationFrame(loop);
+    };
 
     useEffect(() => {
-        frameRef.current = requestAnimationFrame(loop); // 初回のループを開始
+        frameRef.current = requestAnimationFrame(loop);
         return () => {
             if (frameRef.current) {
-                cancelAnimationFrame(frameRef.current); // コンポーネントがアンマウントされたときにループを停止
+                cancelAnimationFrame(frameRef.current);
             }
         };
     }, []);
-    }
+}
