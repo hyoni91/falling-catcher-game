@@ -20,7 +20,7 @@ const SPAWN_INTERVAL = 1000; // ms 1秒ごとにアイテムを生成
 const MISS_COUNT_THRESHOLD = 10; 
 
 // キャッチゾーンのY座標
-const GAME_AREA_HEIGHT = 700;
+const GAME_AREA_HEIGHT = 620;
 const CATCH_ZONE_HEIGHT = 50;
 
 function App() {
@@ -102,9 +102,18 @@ function App() {
         height={GAME_AREA_HEIGHT}
       >
         {
+          gameState === 'Playing' && (
+            <ScoreBoard 
+              score={score} 
+              missCount={missCount} 
+              timeLeft={timeLeft.timeLeft}
+            />
+          )
+        }
+        {
           gameState === 'GameOver' && (
             <div className="game-over">
-              <button onClick={() => startGame()}>RESTART</button>
+              <button onClick={() => startGame()}>START</button>
             </div>
           )}
 
@@ -123,11 +132,7 @@ function App() {
          <CatchZone y={CatchZoneY} height={CATCH_ZONE_HEIGHT} />
 
       </GameArea>
-      <ScoreBoard 
-        score={score}
-        missCount={missCount}
-        timeLeft={timeLeft.timeLeft}
-      />
+      
     </div>
   )
 }
