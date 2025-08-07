@@ -1,7 +1,4 @@
 
-// components/GameOverOverlay.tsx
-import React from "react";
-
 interface Props {
   score: number;
   missCount: number;

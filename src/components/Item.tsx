@@ -1,6 +1,3 @@
-// 画面に落ちてくるアイテムを表すコンポーネント
-import React from 'react';
-
 
 interface ItemProps {
   x: number; // アイテムのX座標
