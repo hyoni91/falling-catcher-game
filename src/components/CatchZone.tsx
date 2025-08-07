@@ -9,17 +9,13 @@ export default function CatchZone({ y, height}: CatchZoneProps) {
 
   return (
     <div
+      className="catch-zone"
       style={{
-        position: 'absolute',
-        left: 0,
         top: y, 
-        width: '100%',
-        backgroundColor: 'rgb(0, 255, 0)',
-        borderTop: '2px solid green',
         height: `${height}px`,
-        zIndex: 100, // 他の要素の上に表示 
       }}
     >
+      <span className="catch-zone-indicator">Catch Zone</span>
     </div>
   );
 }

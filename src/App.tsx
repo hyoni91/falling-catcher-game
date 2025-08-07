@@ -11,8 +11,9 @@ import { useTimer } from './hooks/useTimer';
 import { useGameOver } from './hooks/useGameOver';
 import { useCatch } from './hooks/useCatch';
 import { useSpawnAndPhysics } from './hooks/useSpawnAndPhysics';
-import { type GameState, type ItemType } from './types';
+import { type Judgment, type GameState, type ItemType } from './types';
 import { GameOverOverlay } from './components/GameOverOverlay';
+import { HowToStart } from './components/HowToStart';
 // 定数の定義
 const BOX_SIZE = 500; 
 const ITEM_SIZE = 25;
@@ -30,6 +31,9 @@ function App() {
   const [missCount, setMissCount] = useState(0);
   const [gameState, setGameState] = useState<GameState>('GameOver'); // 初期状態はゲームオーバー
   const [timerEnabled, setTimerEnabled] = useState(false);
+  const [Judgment, setJudgment] = useState<Judgment | null>(null); 
+  const [showIndicator, setShowIndicator] = useState(false);
+  const [showHowToStart, setShowHowToStart] = useState(true); 
   const timeLeft = useTimer(60, timerEnabled);
   const CatchZoneY = GAME_AREA_HEIGHT - CATCH_ZONE_HEIGHT; 
 
@@ -43,6 +47,7 @@ function App() {
   setItems,
   });
 
+
   useGameLoop((dt) => {
     if (gameState === 'Playing') { 
       update(dt); 
@@ -55,12 +60,18 @@ function App() {
     items,
     itemSize: ITEM_SIZE,
     catchZoneY : CatchZoneY,
-    onHit: (id, scoreDelta) => {
+    onHit: (id, scoreDelta, judgment) => {
       setScore(s => s + scoreDelta); 
+      setJudgment(judgment);
+      setShowIndicator(true);
+      setTimeout(() => setShowIndicator(false), 500); 
       setItems(prevItems => prevItems.filter(item => item.id !== id)); // キャッチしたアイテムを削除
     },
-    onMiss: (id) => {
-      setMissCount(m => m + 1); 
+    onMiss: (id, judgment) => {
+      setMissCount(m => m + 1);
+      setJudgment(judgment);
+      setShowIndicator(true);
+      setTimeout(() => setShowIndicator(false), 500); 
       setItems(prevItems => prevItems.filter(item => item.id !== id)); // ミスしたアイテムを削除
     }
   });
@@ -98,6 +109,11 @@ function App() {
 
   return (
     <div className="app-root">
+      {
+        showHowToStart ? 
+          <HowToStart setShowHowToStart={setShowHowToStart} />
+        :
+      
       <GameArea 
         width={BOX_SIZE} 
         height={GAME_AREA_HEIGHT}
@@ -127,14 +143,19 @@ function App() {
             />
           )}
 
+          {showIndicator && Judgment && (
+            <div className={`indicator ${Judgment.toLowerCase()}`}>
+              {Judgment}
+            </div>
+          )}
+
+
         {items.map(item => (
           <Item key={item.id} x={item.x} y={item.y} size={ITEM_SIZE} />
         ))}
-
          <CatchZone y={CatchZoneY} height={CATCH_ZONE_HEIGHT} />
-
       </GameArea>
-      
+  }
     </div>
   )
 }

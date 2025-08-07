@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import type { Judgment } from "../types";
 
 interface Item{
     id : number;
@@ -9,8 +10,8 @@ interface useCatchProps{
     items : Item[];
     itemSize : number; // アイテムのサイズ
     catchZoneY : number; // キャッチゾーンのY座標
-    onHit: (id: number, scoreDelta: number) => void; // アイテムがキャッチされたときのコールバック
-    onMiss: (id: number) => void; // アイテムがミスされたときのコールバック
+    onHit: (id: number, scoreDelta: number, judgment: Judgment) => void; // アイテムがキャッチされたときのコールバック
+    onMiss: (id: number, judgment: Judgment) => void; // アイテムがミスされたときのコールバック
 }
 
 export function useCatch({ items, itemSize, catchZoneY, onHit, onMiss }: useCatchProps) {
@@ -29,11 +30,11 @@ export function useCatch({ items, itemSize, catchZoneY, onHit, onMiss }: useCatc
         , distances[0]);
 
         if(nearest.distance <= 10) {
-          onHit(nearest.id, 100); // Perfect
+          onHit(nearest.id, 100, 'Perfect'); 
         } else if (nearest.distance <= 20) {
-          onHit(nearest.id, 50); // Good
+          onHit(nearest.id, 50, 'Good'); 
         } else {
-          onMiss(nearest.id); // Miss
+          onMiss(nearest.id, 'Miss');
         }
     }, [items, itemSize, catchZoneY, onHit, onMiss]);
 

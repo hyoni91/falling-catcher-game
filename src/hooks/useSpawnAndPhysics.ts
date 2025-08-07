@@ -30,8 +30,8 @@ export function useSpawnAndPhysics({
         spawnTimer.current = 0; 
         const newItem = {
           id: nextId.current++,
-          x: Math.random() * maxX -100, 
-          y: 40, 
+          x: Math.random() * maxX, 
+          y: 20, 
           speed: Math.random() * (5 - 2) + 2, //  px/frame (60fpsで120-360px/s) 
           //  Math.random() * (max – min) + min 乱数を生成 
 
