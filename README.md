@@ -8,7 +8,7 @@
 
 ## 🎮 遊び方
 
-![遊び方](./images/intro.png)
+![遊び方](/images/intro.png)
 
 - Falling items are caught by space-bar on the Catch Zone.  
 - **Perfect**：±10px → 100ポイント  
@@ -21,16 +21,16 @@
 ## 📸 スクリーンショット
 
 ### Game Over  
-![Game Over](./images/game-over.png)
+![Game Over](/images/game-over.png)
 
 ### プレイ中  
-![Playing](./images/playing.png)
+![Playing](/images/playing.png)
 
 ### Miss 表示  
-![Miss](./images/miss.png)
+![Miss](/images/miss.png)
 
 ### Good 表示  
-![Good](./images/good.png)
+![Good](/images/good.png)
 
 ### Perfect 表示  
-![Perfect](./images/perfect.png)
+![Perfect](/images/perfect.png)
